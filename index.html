@@ -103,10 +103,6 @@
     <!-- Nouveau bouton circulaire pour le profil -->
     <button class="circle-button" onclick="window.location.href='profil.html'">P</button>
 
-    <script>
-        // Récupérer le total des pièces stockées dans le localStorage
-        let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
-
         // Afficher le total des pièces
         document.getElementById('coin-display').textContent = `Pièces : ${totalCoins}`;
     </script>
