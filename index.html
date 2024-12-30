@@ -24,21 +24,6 @@
             margin-bottom: 30px;
         }
 
-        /* Style du compteur de pièces */
-        .coin-display {
-            font-size: 28px;
-            font-weight: bold;
-            margin-top: 20px; /* Espacement du titre */
-            padding: 15px 30px;
-            background-color: #3498db; /* Bleu clair */
-            color: white;
-            border-radius: 25px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: inline-block;
-            position: absolute;
-            top: 20px; /* Positionné en haut de la page */
-        }
-
         .button-container {
             display: flex;
             justify-content: center; /* Aligner les boutons horizontalement */
@@ -90,9 +75,6 @@
 <body>
 
     <h1>Jeu Créatif</h1>
-    
-    <!-- Affichage du total des pièces en haut -->
-    <div class="coin-display" id="coin-display">Pièces : 0</div>
 
     <div class="button-container">
         <button onclick="window.location.href='pieces.html'">Pièces</button>
@@ -102,9 +84,6 @@
 
     <!-- Nouveau bouton circulaire pour le profil -->
     <button class="circle-button" onclick="window.location.href='profil.html'">P</button>
-
-        // Afficher le total des pièces
-        document.getElementById('coin-display').textContent = `Pièces : ${totalCoins}`;
     </script>
 
 </body>
