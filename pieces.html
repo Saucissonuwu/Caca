@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette des Pièces</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #ffebcd; /* Fond beige clair */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Ajouter un style pour le compteur de pièces */
+        .coins-counter {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #fff;
+            padding: 10px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .roulette-container {
+            position: relative;
+            width: 400px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #fff;
+            padding: 10px;
+        }
+
+        .info-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 25px;
+            height: 25px;
+            border: none;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .info-button:hover {
+            background-color: #2980b9;
+        }
+
+        .info-popup {
+            position: absolute;
+            top: 40px;
+            right: 10px;
+            width: 200px;
+            padding: 10px;
+            border: 2px solid #333;
+            background-color: #fff;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: left;
+            display: none;
+            z-index: 10;
+        }
+
+        .info-popup ul {
+            padding-left: 20px;
+        }
+
+        .segment-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .segment {
+            width: 90px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #333;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #f0f0f0;
+            position: relative;
+        }
+
+        .segment .light {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 0, 0.4);
+            display: none;
+            z-index: 1;
+        }
+
+        .center-slot {
+            width: 120px;
+            height: 120px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .timer {
+            font-size: 18px;
+            color: red;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Affichage du compteur de pièces -->
+    <div class="coins-counter" id="coins-counter">Pièces: 0</div>
+
+    <h1>Roulette des Pièces</h1>
+    <div class="roulette-container" id="roulette">
+        <button class="info-button" onclick="toggleInfo()">i</button>
+        <div class="info-popup" id="info-popup">
+            <strong>Probabilités :</strong>
+            <ul>
+                <li>50 Pièces : 70%</li>
+                <li>100 Pièces : 35%</li>
+                <li>200 Pièces : 10%</li>
+                <li>300 Pièces : 6%</li>
+                <li>500 Pièces : 3.4%</li>
+                <li>1000 Pièces : 0.8%</li>
+            </ul>
+        </div>
+        <div class="segment-row">
+            <div class="segment" data-prize="50">50 Pièces<div class="light"></div></div>
+            <div class="segment" data-prize="100">100 Pièces<div class="light"></div></div>
+            <div class="segment" data-prize="200">200 Pièces<div class="light"></div></div>
+        </div>
+        <div class="center-slot" id="center-slot">?</div>
+        <div class="segment-row">
+            <div class="segment" data-prize="300">300 Pièces<div class="light"></div></div>
+            <div class="segment" data-prize="500">500 Pièces<div class="light"></div></div>
+            <div class="segment" data-prize="1000">1000 Pièces<div class="light"></div></div>
+        </div>
+    </div>
+    <button id="spin-button" onclick="spinRoulette()">Lancer la Roulette</button>
+
+    <div id="timer" class="timer"></div>
+
+    <script>
+        let spinning = false;
+        let totalCoins = 0; // Variable pour stocker le nombre total de pièces
+        let rouletteCount = parseInt(localStorage.getItem('rouletteCount')) || 0;
+
+        // Fonction pour mettre à jour l'affichage du compteur de pièces
+        function updateCoinCounter() {
+            document.getElementById('coins-counter').textContent = `Pièces: ${totalCoins}`;
+            localStorage.setItem('totalCoins', totalCoins); // Sauvegarde dans le stockage local
+        }
+
+        
+
+        // Sauvegarder le temps du dernier spin
+        function updateLastSpinTime() {
+            const now = new Date().getTime();
+            localStorage.setItem('lastSpinTime', now);
+        }
+
+        // Lancer la roulette
+        function spinRoulette() {
+            if (spinning) return;
+            spinning = true;
+
+            const segments = document.querySelectorAll('.segment');
+            const centerSlot = document.getElementById('center-slot');
+
+            // Probabilités personnalisées pour chaque segment
+            const prizes = [
+                { prize: "50", weight: 70 },
+                { prize: "100", weight: 35 },
+                { prize: "200", weight: 10 },
+                { prize: "300", weight: 6 },
+                { prize: "500", weight: 3.4 },
+                { prize: "1000", weight: 0.8 }
+            ];
+
+            const weightedArray = [];
+            prizes.forEach(item => {
+                for (let i = 0; i < item.weight * 10; i++) {
+                    weightedArray.push(item.prize);
+                }
+            });
+
+            const randomPrize = weightedArray[Math.floor(Math.random() * weightedArray.length)];
+
+            let finalIndex = Array.from(segments).findIndex(
+                segment => segment.getAttribute('data-prize') === randomPrize
+            );
+
+            let currentIndex = 0;
+            let rotations = Math.floor(Math.random() * 10) + 20; // Nombre aléatoire de rotations
+
+            const interval = setInterval(() => {
+                segments.forEach((segment, index) => {
+                    const light = segment.querySelector('.light');
+                    light.style.display = index === currentIndex ? 'block' : 'none';
+                });
+
+                if (rotations > 0) {
+                    currentIndex = (currentIndex + 1) % segments.length;
+                    rotations--;
+                } else if (currentIndex === finalIndex) {
+                    clearInterval(interval);
+                    spinning = false;
+
+                    setTimeout(() => {
+                        segments.forEach(segment => {
+                            const light = segment.querySelector('.light');
+                            light.style.display = 'none';
+                        });
+
+                        centerSlot.textContent = `${randomPrize} Pièces`;
+
+                        // Ajouter les pièces gagnées
+                        totalCoins += parseInt(randomPrize);
+                        updateCoinCounter();
+
+                        // Incrémenter le compteur de roulettes
+                        rouletteCount++;
+                        localStorage.setItem('rouletteCount', rouletteCount);
+
+                        // Sauvegarder le temps du dernier spin
+                        updateLastSpinTime();
+                        checkSpinAvailability(); // Mettre à jour la disponibilité du spin
+                    }, 100);
+                } else {
+                    currentIndex = (currentIndex + 1) % segments.length;
+                }
+            }, 100);
+        }
+
+        // Fonction pour afficher/masquer les informations
+        function toggleInfo() {
+            const infoPopup = document.getElementById('info-popup');
+            infoPopup.style.display = infoPopup.style.display === 'none' || !infoPopup.style.display ? 'block' : 'none';
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Récupérer les pièces sauvegardées
+            const storedCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+            totalCoins = storedCoins;
+            updateCoinCounter();
+
+            // Récupérer le nombre de roulettes effectuées
+            rouletteCount = parseInt(localStorage.getItem('rouletteCount')) || 0;
+
+            // Vérifier la disponibilité du spin toutes les secondes
+            setInterval(checkSpinAvailability, 1000);
+
+            // Vérification initiale du temps restant pour spin
+            checkSpinAvailability();
+        });
+    </script>
+</body>
+</html>
