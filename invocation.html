@@ -353,6 +353,7 @@ function multiSummon() {
         return;
     }
 
+    // Retirer les pièces avant de commencer les invocations
     availableCoins -= cost;
     localStorage.setItem('totalCoins', availableCoins);
     updateAvailableCoins();
