@@ -251,6 +251,14 @@
             <div class="reward" id="placeholder">?</div>
         </div>
     </div>
+    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 100;">
+        <div style="position: relative; max-width: 90%; max-height: 90%;">
+            <img id="modal-image" src="" alt="Reward Image" style="width: auto; height: auto; max-width: 100%; max-height: 100%; border: 5px solid white; border-radius: 15px; object-fit: contain;">
+            <button onclick="closeModal()" style="position: absolute; top: -20px; right: -20px; background: red; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer;">X</button>
+        </div>
+    </div>
+    
+    
 
     <script>
         let availableCoins = 0; // Stockage des pièces disponibles
@@ -309,8 +317,7 @@ function saveRewardToCollection(reward) {
             return availableCoins >= cost;
         }
 
-       // Exemple de fonction d'invocation simple
-function singleSummon() {
+        function singleSummon() {
     const cost = 50; // Coût de 1 pièce
     if (!canSummon(cost)) {
         alert("Vous n'avez pas assez de pièces pour une invocation !");
@@ -328,22 +335,22 @@ function singleSummon() {
     const reward = getRandomReward();
     const rewardElement = document.createElement('div');
     rewardElement.classList.add('reward', 'single-reward', reward.rarity.toLowerCase());
+    rewardElement.onclick = () => showModal(reward.image); // Ajout de l'événement onclick
 
     const rewardImage = document.createElement('img');
-    rewardImage.src = reward.image;  // L'image de la récompense
+    rewardImage.src = reward.image;
     rewardImage.alt = reward.name;
     rewardImage.style.width = '100px';
     rewardImage.style.height = '100px';
     rewardElement.appendChild(rewardImage);
 
-    // Création du texte en bas
     const rewardTextBottom = document.createElement('div');
     rewardTextBottom.classList.add('reward-text-bottom');
     rewardTextBottom.textContent = `${reward.name} (${reward.rarity})`;
     rewardElement.appendChild(rewardTextBottom);
 
     rewardsContainer.appendChild(rewardElement);
-    saveRewardToCollection(reward); // Sauvegarde l'image et la récompense dans la collection
+    saveRewardToCollection(reward);
 }
 
 function multiSummon() {
@@ -353,7 +360,6 @@ function multiSummon() {
         return;
     }
 
-    // Retirer les pièces avant de commencer les invocations
     availableCoins -= cost;
     localStorage.setItem('totalCoins', availableCoins);
     updateAvailableCoins();
@@ -362,20 +368,19 @@ function multiSummon() {
     rewardsContainer.style.gridTemplateColumns = 'repeat(5, 1fr)';
     rewardsContainer.style.gridTemplateRows = 'repeat(2, 1fr)';
     
-    // Exécution de 10 invocations
     for (let i = 0; i < 10; i++) {
         const reward = getRandomReward();
         const rewardElement = document.createElement('div');
         rewardElement.classList.add('reward', reward.rarity.toLowerCase());
+        rewardElement.onclick = () => showModal(reward.image); // Ajout de l'événement onclick
 
         const rewardImage = document.createElement('img');
-        rewardImage.src = reward.image;  // L'image de la récompense
+        rewardImage.src = reward.image;
         rewardImage.alt = reward.name;
         rewardImage.style.width = '50px';
         rewardImage.style.height = '50px';
         rewardElement.appendChild(rewardImage);
 
-        // Création du texte en bas
         const rewardTextBottom = document.createElement('div');
         rewardTextBottom.classList.add('reward-text-bottom');
         rewardTextBottom.textContent = `${reward.name} (${reward.rarity})`;
@@ -384,11 +389,23 @@ function multiSummon() {
         rewardsContainer.appendChild(rewardElement);
         saveRewardToCollection(reward);
     }
-
-    // Incrémenter les compteurs après les invocations
     invocationCount += 10;
     updateProfileDisplay();
 }
+
+
+function showModal(imageSrc) {
+    const modal = document.getElementById('modal');
+    const modalImage = document.getElementById('modal-image');
+    modalImage.src = imageSrc;
+    modal.style.display = 'flex';
+}
+
+function closeModal() {
+    const modal = document.getElementById('modal');
+    modal.style.display = 'none';
+}
+
 
         function toggleInfo() {
             const infoPopup = document.getElementById('info-popup');
