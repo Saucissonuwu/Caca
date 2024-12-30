@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Collection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+        }
+
+        h1 {
+            color: #333;
+            margin: 20px 0;
+        }
+
+        .collection-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .reward {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #333;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Ma Collection</h1>
+    <div class="collection-container" id="collection-container">
+        <!-- Les récompenses collectées apparaîtront ici -->
+    </div>
+
+    <script>
+        function loadCollection() {
+            const collectionContainer = document.getElementById('collection-container');
+            const rewardsCollection = JSON.parse(localStorage.getItem('rewardsCollection')) || [];
+
+            if (rewardsCollection.length === 0) {
+                collectionContainer.innerHTML = "<p>Aucune récompense collectée.</p>";
+                return;
+            }
+
+            // Compter les occurrences de chaque récompense
+            const rewardCounts = rewardsCollection.reduce((acc, reward) => {
+                const key = `${reward.name} (${reward.rarity})`;
+                if (acc[key]) {
+                    acc[key]++;
+                } else {
+                    acc[key] = 1;
+                }
+                return acc;
+            }, {});
+
+            // Afficher les récompenses avec leur nombre
+            Object.keys(rewardCounts).forEach(key => {
+                const [name, rarity] = key.split(' (');
+                const count = rewardCounts[key];
+                const rewardElement = document.createElement('div');
+                rewardElement.classList.add('reward');
+                rewardElement.textContent = `${name} (${rarity.slice(0, -1)})${count > 1 ? ` x${count}` : ''}`;
+
+                // Définir la couleur de fond selon la rareté
+                switch (rarity) {
+                    case "Commune":
+                        rewardElement.style.backgroundColor = "#a9c6f2"; // Bleu clair
+                        break;
+                    case "Rare":
+                        rewardElement.style.backgroundColor = "#6ec1f5"; // Bleu
+                        break;
+                    case "Epique":
+                        rewardElement.style.backgroundColor = "#9b59b6"; // Violet
+                        break;
+                    case "Légendaire":
+                        rewardElement.style.backgroundColor = "#f39c12"; // Jaune
+                        break;
+                    default:
+                        rewardElement.style.backgroundColor = "#f0f0f0"; // Gris par défaut
+                        break;
+                }
+
+                collectionContainer.appendChild(rewardElement);
+            });
+        }
+
+
+
+        document.addEventListener('DOMContentLoaded', loadCollection);
+    </script>
+
+</body>
+</html>
