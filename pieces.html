@@ -38,6 +38,27 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
+        /* Style pour les boutons d'augmentation et de diminution */
+        .coins-control {
+            margin-top: 10px;
+        }
+
+        .coins-button {
+            font-size: 24px;
+            padding: 5px 15px;
+            margin: 0 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .coins-button:hover {
+            background-color: #2980b9;
+        }
+
         .roulette-container {
             position: relative;
             width: 400px;
@@ -158,6 +179,25 @@
             color: red;
             margin-top: 15px;
         }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
@@ -165,6 +205,7 @@
     <div class="coins-counter" id="coins-counter">Pièces: 0</div>
 
     <h1>Roulette des Pièces</h1>
+    <a href="index.html" class="back-button">Retour</a>
     <div class="roulette-container" id="roulette">
         <button class="info-button" onclick="toggleInfo()">i</button>
         <div class="info-popup" id="info-popup">
@@ -190,6 +231,13 @@
             <div class="segment" data-prize="1000">1000 Pièces<div class="light"></div></div>
         </div>
     </div>
+
+    <div class="coins-control">
+        <!-- Boutons pour augmenter/diminuer les pièces -->
+        <button class="coins-button" onclick="adjustCoins(-10)">-</button>
+        <button class="coins-button" onclick="adjustCoins(10)">+</button>
+    </div>
+
     <button id="spin-button" onclick="spinRoulette()">Lancer la Roulette</button>
 
     <div id="timer" class="timer"></div>
@@ -205,7 +253,41 @@
             localStorage.setItem('totalCoins', totalCoins); // Sauvegarde dans le stockage local
         }
 
-        
+        // Fonction pour ajuster les pièces
+        function adjustCoins(amount) {
+            totalCoins += amount;
+            if (totalCoins < 0) totalCoins = 0;  // Empêcher les pièces de devenir négatives
+            updateCoinCounter();
+        }
+
+        function checkSpinAvailability() {
+            const lastSpinTime = localStorage.getItem('lastSpinTime');
+            const now = new Date().getTime();
+
+            if (lastSpinTime) {
+                const timeDiff = now - lastSpinTime;  // Calcul de la différence de temps depuis le dernier spin
+                const timeLeft = 3 * 60 * 60 * 1000 - timeDiff;  // Temps restant jusqu'à 3 heures (en millisecondes)
+
+                if (timeLeft > 0) {
+                    // Calcul du temps restant en heures, minutes et secondes
+                    const hoursRemaining = Math.floor(timeLeft / (1000 * 60 * 60));
+                    const minutesRemaining = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const secondsRemaining = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                    // Mise à jour de l'affichage du décompte
+                    document.getElementById('timer').textContent = `Prochain spin dans : ${hoursRemaining}h ${minutesRemaining}m ${secondsRemaining}s`;
+                    document.getElementById('spin-button').disabled = true;  // Désactivation du bouton spin
+                } else {
+                    // Le temps est écoulé, réinitialisation
+                    document.getElementById('timer').textContent = '';
+                    document.getElementById('spin-button').disabled = false;  // Activation du bouton spin
+                }
+            } else {
+                // Si aucun spin n'a eu lieu auparavant, on affiche le bouton comme disponible
+                document.getElementById('timer').textContent = '';
+                document.getElementById('spin-button').disabled = false;
+            }
+        }
 
         // Sauvegarder le temps du dernier spin
         function updateLastSpinTime() {
