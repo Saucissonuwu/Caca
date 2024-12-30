@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ma Collection</title>
     <style>
+        /* Styles inchangés */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -107,6 +108,12 @@
         .back-button:hover {
             background-color: #2980b9;
         }
+
+        .collection-counter {
+            margin: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -114,6 +121,10 @@
     <a href="index.html" class="back-button">Retour</a>
 
     <h1>Ma Collection</h1>
+
+    <div class="collection-counter" id="collection-counter">
+        Cartes collectées : 0 / 31
+    </div>
 
     <div class="controls">
         <button class="sort-button" onclick="sortCollection()">Trier par Rareté</button>
@@ -131,12 +142,15 @@
     </div>
 
     <script>
+        const MAX_CARDS = 31;
+
         function loadCollection() {
             const collectionContainer = document.getElementById('collection-container');
             const rewardsCollection = JSON.parse(localStorage.getItem('rewardsCollection')) || [];
 
             if (rewardsCollection.length === 0) {
                 collectionContainer.innerHTML = "<p>Aucune récompense collectée.</p>";
+                updateCounter(0);
                 return;
             }
 
@@ -144,63 +158,72 @@
         }
 
         function renderCollection(rewardsCollection) {
-    const collectionContainer = document.getElementById('collection-container');
-    collectionContainer.innerHTML = ''; // Clear the container
+            const collectionContainer = document.getElementById('collection-container');
+            collectionContainer.innerHTML = ''; // Clear the container
 
-    // Compter les occurrences de chaque récompense
-    const rewardCounts = rewardsCollection.reduce((acc, reward) => {
-        const key = `${reward.name} (${reward.rarity})`;
-        if (acc[key]) {
-            acc[key]++;
-        } else {
-            acc[key] = 1;
+            // Compter les cartes uniques
+            const uniqueRewards = new Set(rewardsCollection.map(reward => reward.name));
+            updateCounter(uniqueRewards.size);
+
+            // Compter les occurrences de chaque récompense
+            const rewardCounts = rewardsCollection.reduce((acc, reward) => {
+                const key = `${reward.name} (${reward.rarity})`;
+                if (acc[key]) {
+                    acc[key]++;
+                } else {
+                    acc[key] = 1;
+                }
+                return acc;
+            }, {});
+
+            // Afficher les récompenses avec leur nombre
+            Object.keys(rewardCounts).forEach(key => {
+                const [name, rarity] = key.split(' (');
+                const count = rewardCounts[key];
+                const rewardData = rewardsCollection.find(r => `${r.name} (${r.rarity})` === key);
+
+                const rewardElement = document.createElement('div');
+                rewardElement.classList.add('reward');
+
+                // Ajouter la rareté en haut de la carte
+                const rewardRarityElement = document.createElement('div');
+                rewardRarityElement.classList.add('reward-rarity');
+                rewardRarityElement.textContent = rarity.replace(')', ''); // Enlever la parenthèse fermante
+                rewardElement.appendChild(rewardRarityElement);
+
+                // Créer l'image de la récompense
+                const rewardImage = document.createElement('img');
+                rewardImage.src = rewardData.image;
+                rewardImage.alt = name;
+                rewardImage.onclick = () => showModal(rewardData.image); // Ajout de la fonction d'ouverture du modal
+                rewardElement.appendChild(rewardImage);
+
+                // Ajouter le comptage des doublons
+                const rewardCountElement = document.createElement('div');
+                rewardCountElement.classList.add('reward-count');
+                rewardCountElement.textContent = `x${count}`;
+                rewardElement.appendChild(rewardCountElement);
+
+                collectionContainer.appendChild(rewardElement);
+            });
         }
-        return acc;
-    }, {});
 
-    // Afficher les récompenses avec leur nombre
-    Object.keys(rewardCounts).forEach(key => {
-        const [name, rarity] = key.split(' (');
-        const count = rewardCounts[key];
-        const rewardData = rewardsCollection.find(r => `${r.name} (${r.rarity})` === key);
-
-        const rewardElement = document.createElement('div');
-        rewardElement.classList.add('reward');
-
-        // Ajouter la rareté en haut de la carte
-        const rewardRarityElement = document.createElement('div');
-        rewardRarityElement.classList.add('reward-rarity');
-        rewardRarityElement.textContent = rarity.replace(')', ''); // Enlever la parenthèse fermante
-        rewardElement.appendChild(rewardRarityElement);
-
-        // Créer l'image de la récompense
-        const rewardImage = document.createElement('img');
-        rewardImage.src = rewardData.image;
-        rewardImage.alt = name;
-        rewardImage.onclick = () => showModal(rewardData.image); // Ajout de la fonction d'ouverture du modal
-        rewardElement.appendChild(rewardImage);
-
-        // Ajouter le comptage des doublons
-        const rewardCountElement = document.createElement('div');
-        rewardCountElement.classList.add('reward-count');
-        rewardCountElement.textContent = `x${count}`;
-        rewardElement.appendChild(rewardCountElement);
-
-        collectionContainer.appendChild(rewardElement);
-    });
-}
+        function updateCounter(uniqueCount) {
+            const counter = document.getElementById('collection-counter');
+            counter.textContent = `Cartes collectées : ${uniqueCount} / ${MAX_CARDS}`;
+        }
 
         function showModal(imageSrc) {
-    const modal = document.getElementById('modal');
-    const modalImage = document.getElementById('modal-image');
-    modalImage.src = imageSrc; // Charge l'image haute résolution dans le modal
-    modal.style.display = 'flex'; // Affiche le modal
-}
+            const modal = document.getElementById('modal');
+            const modalImage = document.getElementById('modal-image');
+            modalImage.src = imageSrc; // Charge l'image haute résolution dans le modal
+            modal.style.display = 'flex'; // Affiche le modal
+        }
 
-function closeModal() {
-    const modal = document.getElementById('modal');
-    modal.style.display = 'none'; // Cache le modal
-}
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'none'; // Cache le modal
+        }
 
         function sortCollection() {
             const rewardsCollection = JSON.parse(localStorage.getItem('rewardsCollection')) || [];
