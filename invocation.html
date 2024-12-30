@@ -200,6 +200,25 @@
     background-color: #ffc107;
     box-shadow: 0 0 10px #ffcc00, 0 0 10px #ffcc00; /* Réduit la taille de l'ombre et l'intensité */
 }
+
+.back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+.back-button:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
@@ -242,11 +261,18 @@
         
 
         const rewardsPool = [
-            { name: "Radolf le magicien", rarity: "Commune", weight: 60, image: "pokemon-card-2024-11-30-4-28-39.png" },    
+            { name: "Radolf le magicien", rarity: "Epique", "type": "Prestige", weight: 12, image: "1.png" },
+            { name: "El verme musician", rarity: "Rare", "type": "animal", weight: 35, image: "2.png" },      
+            { name: "Eau mouillée", rarity: "Epique", "type": "objet", weight: 12, image: "3.png" },
+            { name: "Le dos fin", rarity: "Légendaire", "type": "animal", weight: 2, image: "4.png" },
+            { name: "Chococaca", rarity: "Rare", "type": "objet", weight: 35, image: "5.png" }, 
+            { name: "Père pète", rarity: "Epique", "type": "Prestige", weight: 12, image: "6.png" },
+            { name: "Cervoloant", rarity: "Commune", "type": "Objet", weight: 60, image: "7.png" },    
         ];
         
 
-        function getRandomReward() {
+       // Fonction de récupération aléatoire de récompenses
+function getRandomReward() {
     const weightedArray = [];
     rewardsPool.forEach(item => {
         for (let i = 0; i < item.weight; i++) {
@@ -272,17 +298,19 @@
             updateAvailableCoins();
         }
 
-        function saveRewardToCollection(reward) {
-            const currentCollection = JSON.parse(localStorage.getItem('rewardsCollection')) || [];
-            currentCollection.push(reward);
-            localStorage.setItem('rewardsCollection', JSON.stringify(currentCollection));
-        }
+        // Sauvegarde de la récompense dans la collection
+function saveRewardToCollection(reward) {
+    const currentCollection = JSON.parse(localStorage.getItem('rewardsCollection')) || [];
+    currentCollection.push(reward);
+    localStorage.setItem('rewardsCollection', JSON.stringify(currentCollection));
+}
 
         function canSummon(cost) {
             return availableCoins >= cost;
         }
 
-        function singleSummon() {
+       // Exemple de fonction d'invocation simple
+function singleSummon() {
     const cost = 50; // Coût de 1 pièce
     if (!canSummon(cost)) {
         alert("Vous n'avez pas assez de pièces pour une invocation !");
@@ -304,8 +332,8 @@
     const rewardImage = document.createElement('img');
     rewardImage.src = reward.image;  // L'image de la récompense
     rewardImage.alt = reward.name;
-    rewardImage.style.width = '100px';  // Vous pouvez ajuster la taille ici
-    rewardImage.style.height = '100px'; // Vous pouvez ajuster la taille ici
+    rewardImage.style.width = '100px';
+    rewardImage.style.height = '100px';
     rewardElement.appendChild(rewardImage);
 
     // Création du texte en bas
@@ -315,16 +343,11 @@
     rewardElement.appendChild(rewardTextBottom);
 
     rewardsContainer.appendChild(rewardElement);
-    saveRewardToCollection(reward);
-
-    // Incrémenter les compteurs après l'invocation
-    invocationCount++;
-    updateProfileDisplay();
+    saveRewardToCollection(reward); // Sauvegarde l'image et la récompense dans la collection
 }
 
-
 function multiSummon() {
-    const cost = 500; // Coût pour invocation x10
+    const cost = 0; // Coût pour invocation x10
     if (!canSummon(cost)) {
         alert("Vous n'avez pas assez de pièces pour une invocation x10 !");
         return;
