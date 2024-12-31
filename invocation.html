@@ -219,6 +219,8 @@
 .back-button:hover {
             background-color: #2980b9;
         }
+
+        
     </style>
 </head>
 <body>
@@ -257,6 +259,19 @@
             <button onclick="closeModal()" style="position: absolute; top: -20px; right: -20px; background: red; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer;">X</button>
         </div>
     </div>
+
+   <!-- Bouton pour afficher toutes les cartes disponibles -->
+<button class="info-button" onclick="toggleAvailableCards()"></button>
+
+<!-- Popup pour afficher toutes les cartes -->
+<div id="available-cards-popup" style="display: none; position: fixed; top: 10%; left: 10%; width: 80%; height: 80%; background-color: #fff; border: 2px solid #333; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); overflow-y: auto; z-index: 100;">
+    <div style="position: relative;">
+        <button onclick="toggleAvailableCards()" style="position: absolute; top: 10px; right: 10px; background: red; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 18px; cursor: pointer;">X</button>
+        <div id="available-cards-container" style="display: flex; flex-wrap: wrap; gap: 15px; padding: 20px; justify-content: center; overflow-y: auto; height: calc(100% - 40px);">
+            <!-- Les cartes disponibles seront affichées ici -->
+        </div>
+    </div>
+</div>
     
     
 
@@ -281,6 +296,21 @@
             { name: "Pierre la pierre", rarity: "Rare", "type": "Objet", weight: 35, image: "10.png" }, 
             { name: "TireXhandicapé", rarity: "Epique", "type": "Animal", weight: 12, image: "11.png" },      
         ];
+
+        // Tableau statique des cartes disponibles
+const availableCards = [
+            { name: "Radolf le magicien", rarity: "Epique", image: "1.png" },
+            { name: "El verme musician", rarity: "Rare", image: "2.png" },      
+            { name: "Eau mouillée", rarity: "Epique", image: "3.png" },
+            { name: "Le dos fin", rarity: "Légendaire", image: "4.png" },
+            { name: "Chococaca", rarity: "Rare", image: "5.png" }, 
+            { name: "Père pète", rarity: "Epique", image: "6.png" },
+            { name: "Cervoloant", rarity: "Commune",image: "7.png" },
+            { name: "Gilberto le camionneur", rarity: "Epique", image: "8.png" },
+            { name: "Enceinte à musique", rarity: "Rare", image: "9.png" }, 
+            { name: "Pierre la pierre", rarity: "Rare", image: "10.png" }, 
+            { name: "TireXhandicapé", rarity: "Epique", image: "11.png" },
+];
         
 
        // Fonction de récupération aléatoire de récompenses
@@ -416,6 +446,45 @@ function closeModal() {
             infoPopup.style.display = infoPopup.style.display === 'none' || !infoPopup.style.display ? 'block' : 'none';
             infoPopup.style.opacity = infoPopup.style.display === 'none' ? '0' : '1';
         }
+
+    // Fonction pour afficher ou cacher la liste des cartes disponibles
+function toggleAvailableCards() {
+    const cardsPopup = document.getElementById('available-cards-popup');
+    const cardsContainer = document.getElementById('available-cards-container');
+
+    if (cardsPopup.style.display === 'none' || !cardsPopup.style.display) {
+        // Afficher la popup
+        cardsPopup.style.display = 'block';
+        cardsContainer.innerHTML = ''; // Vider le contenu précédent
+
+        // Ajouter les cartes disponibles
+        availableCards.forEach(card => {
+            const cardElement = document.createElement('div');
+            cardElement.classList.add('reward', card.rarity.toLowerCase());
+            
+            // Créer l'image de la carte
+            const cardImage = document.createElement('img');
+            cardImage.src = card.image;
+            cardImage.alt = card.name;
+            cardImage.style.width = '250px';  // Augmenter la taille de l'image
+            cardImage.style.height = '250px'; // Augmenter la taille de l'image
+            cardElement.appendChild(cardImage);
+
+            // Créer le texte de la carte
+            const cardText = document.createElement('div');
+            cardText.classList.add('reward-text-bottom');
+            cardText.textContent = `${card.name} (${card.rarity})`;
+            cardElement.appendChild(cardText);
+
+            // Ajouter l'élément carte au conteneur
+            cardsContainer.appendChild(cardElement);
+        });
+    } else {
+        // Cacher la popup
+        cardsPopup.style.display = 'none';
+    }
+}
+
 
         // Chargement des pièces disponibles au démarrage
         document.addEventListener('DOMContentLoaded', loadCoins);
