@@ -91,12 +91,50 @@
             border-radius: 50%; /* Forme circulaire pour l'image */
             object-fit: cover; /* S'assurer que l'image couvre bien l'espace du bouton */
         }
+
+        /* Style de la section de connexion */
+        .login-container {
+            background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
+            border-radius: 20px; /* Coins arrondis */
+            padding: 40px 60px;
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5), -5px -5px 15px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            width: 300px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none; /* Masqué par défaut */
+        }
+
+        .login-container button {
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 25px;
+            background-color: #4285F4; /* Couleur Google */
+            color: white;
+            box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-container button:hover {
+            background-color: #357ae8; /* Couleur de survol */
+            transform: scale(1.05);
+            box-shadow: 3px 6px 15px rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
 <body>
 
+    <!-- Conteneur de connexion (initialement masqué) -->
+    <div class="login-container" id="loginContainer">
+        <h2>Se connecter</h2>
+        <button onclick="signInWithGoogle()">Se connecter avec Google</button>
+    </div>
+
     <!-- Conteneur principal avec effet 3D -->
-    <div class="content-box">
+    <div class="content-box" id="contentBox" style="display: none;">
         <h1>Jeu Créatif</h1>
 
         <div class="button-container">
@@ -112,12 +150,56 @@
         <img id="profilePic" src="default-avatar.png" alt="Photo de Profil">
     </button>
 
-    <script>
-        // Charger la photo de profil depuis le localStorage si elle existe
-        let profilePic = localStorage.getItem('profilePic');
-        if (profilePic) {
-            document.getElementById('profilePic').src = profilePic;
+    <script type="module">
+        // Importer les fonctions nécessaires de Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+        // Configuration de Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
+          authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
+          projectId: "jeu-de-carte-dfa51",
+          storageBucket: "jeu-de-carte-dfa51.firebasestorage.app",
+          messagingSenderId: "684513159935",
+          appId: "1:684513159935:web:17820c82672d6527ff7aca",
+          measurementId: "G-F3P0WW2R3H"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Fonction de connexion avec Google
+        function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    console.log("Utilisateur connecté : ", user);
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('contentBox').style.display = 'block';
+                    localStorage.setItem('profilePic', user.photoURL); // Sauvegarder l'avatar
+                    document.getElementById('profilePic').src = user.photoURL; // Mettre à jour l'image du profil
+                })
+                .catch((error) => {
+                    console.error("Erreur de connexion : ", error.message);
+                });
         }
+
+        // Détecter l'état de l'utilisateur
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('loginContainer').style.display = 'none'; // Masquer la section de connexion
+                document.getElementById('contentBox').style.display = 'block'; // Afficher la section du jeu
+                localStorage.setItem('profilePic', user.photoURL); // Sauvegarder l'image de profil
+            } else {
+                document.getElementById('loginContainer').style.display = 'block'; // Afficher la section de connexion
+                document.getElementById('contentBox').style.display = 'none'; // Masquer la section du jeu
+            }
+        });
     </script>
 
 </body>
