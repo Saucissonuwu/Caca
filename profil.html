@@ -148,31 +148,6 @@
             transform: scale(1.05);
             box-shadow: 3px 6px 15px rgba(0, 0, 0, 0.5);
         }
-
-        .button-container button {
-            padding: 15px 30px;
-            font-size: 18px;
-            margin: 10px;
-            border: none;
-            cursor: pointer;
-            border-radius: 25px;
-            background-color: #ffffff;
-            color: #0099ff;
-            box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Nouveau bouton de déconnexion */
-        .logout-button {
-            background-color: #e74c3c; /* Couleur rouge pour la déconnexion */
-            color: white;
-        }
-
-        .logout-button:hover {
-            background-color: #c0392b; /* Rouge plus foncé au survol */
-            transform: scale(1.05);
-            box-shadow: 3px 6px 15px rgba(0, 0, 0, 0.5);
-        }
     </style>
 </head>
 <body>
@@ -180,6 +155,7 @@
     <!-- Section de connexion avec un bouton Google -->
     <div class="login-container" id="loginContainer">
         <h2>Se connecter</h2>
+        <!-- Bouton de connexion sans onClick directement dans HTML -->
         <button id="googleSignInButton">Se connecter avec Google</button>
     </div>
 
@@ -190,28 +166,29 @@
         <div class="profile-info">
             <p>Roulettes effectuées : <span id="rouletteCount">0</span></p>
             <p>Invocations réalisées : <span id="invocationCount">0</span></p>
-            <p id="playTime">Temps de jeu : 0h 0m 0s</p>
+            <p id="playTime">Temps de jeu : 0h 0m 0s</p> <!-- Zone du temps de jeu -->
         </div>
 
         <div class="button-container">
             <button onclick="window.location.href='index.html'">Retour à l'accueil</button>
-            <!-- Nouveau bouton de déconnexion -->
-            <button class="logout-button" onclick="signOutUser()">Déconnexion</button>
         </div>
     </div>
 
+    <!-- Nouveau bouton circulaire pour le profil -->
     <button class="circle-button" onclick="triggerFileInput()">
         <img id="profilePic" src="default-avatar.png" alt="Photo de Profil">
     </button>
 
+    <!-- Champ de téléchargement de fichier caché -->
     <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic(event)">
 
     <script type="module">
         // Importer les fonctions nécessaires de Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
+        // Configuration de Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
           authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
@@ -222,10 +199,12 @@
           measurementId: "G-F3P0WW2R3H"
         };
 
+        // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Fonction de connexion avec Google
         function signInWithGoogle() {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider)
@@ -234,25 +213,14 @@
                     console.log("Utilisateur connecté : ", user);
                     document.getElementById('loginContainer').style.display = 'none';
                     document.getElementById('contentBox').style.display = 'block';
-                    loadProfileData(user.uid);
+                    loadProfileData(user.uid); // Charger les données du profil de l'utilisateur
                 })
                 .catch((error) => {
                     console.error("Erreur de connexion : ", error.message);
                 });
         }
 
-        function signOutUser() {
-            signOut(auth)
-                .then(() => {
-                    console.log("Utilisateur déconnecté");
-                    document.getElementById('loginContainer').style.display = 'block';
-                    document.getElementById('contentBox').style.display = 'none';
-                })
-                .catch((error) => {
-                    console.error("Erreur de déconnexion : ", error.message);
-                });
-        }
-
+        // Charger les données du profil
         function loadProfileData(uid) {
             const userRef = doc(db, "users", uid);
             getDoc(userRef).then((docSnap) => {
@@ -261,43 +229,26 @@
                     document.getElementById('rouletteCount').textContent = userData.rouletteCount || 0;
                     document.getElementById('invocationCount').textContent = userData.invocationCount || 0;
                     document.getElementById('profilePic').src = userData.profilePic || "default-avatar.png";
-                    startPlayTime(userData.playTime || 0);
                 }
             }).catch((error) => {
                 console.error("Erreur de lecture des données utilisateur : ", error.message);
             });
         }
 
-        function startPlayTime(lastPlayTime) {
-            const startTime = Date.now() - lastPlayTime;
-            updatePlayTime(startTime);
-        }
-
-        function updatePlayTime(startTime) {
-            const playTimeDisplay = document.getElementById('playTime');
-            setInterval(() => {
-                const currentTime = Date.now();
-                const elapsed = Math.floor((currentTime - startTime) / 1000);
-                const hours = Math.floor(elapsed / 3600);
-                const minutes = Math.floor((elapsed % 3600) / 60);
-                const seconds = elapsed % 60;
-                playTimeDisplay.textContent = `Temps de jeu : ${hours}h ${minutes}m ${seconds}s`;
-                
-                const userRef = doc(db, "users", auth.currentUser.uid);
-                updateDoc(userRef, { playTime: currentTime - startTime });
-            }, 1000);
-        }
-
+        // Détecter l'état de l'utilisateur
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('contentBox').style.display = 'block';
-                loadProfileData(user.uid);
+                document.getElementById('loginContainer').style.display = 'none'; // Masquer la section de connexion
+                document.getElementById('contentBox').style.display = 'block'; // Afficher le profil
+                loadProfileData(user.uid); // Charger les données de l'utilisateur
             } else {
-                document.getElementById('loginContainer').style.display = 'block';
-                document.getElementById('contentBox').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'block'; // Afficher la section de connexion
+                document.getElementById('contentBox').style.display = 'none'; // Masquer la section du profil
             }
         });
+
+        // Attacher un gestionnaire d'événements au bouton de connexion Google
+        document.getElementById('googleSignInButton').addEventListener('click', signInWithGoogle);
     </script>
 
 </body>
