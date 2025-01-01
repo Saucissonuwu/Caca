@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -201,6 +202,16 @@
     box-shadow: 0 0 10px #ffcc00, 0 0 10px #ffcc00; /* Réduit la taille de l'ombre et l'intensité */
 }
 
+.spécial {
+    background-color: #ff0000;
+    box-shadow: 0 0 10px #ff0000, 0 0 10px #ff0000fa; /* Réduit la taille de l'ombre et l'intensité */
+}
+
+.arc-en-ciel {
+    background-color: #ff00b7;
+    box-shadow: 0 0 10px #ff00b7, 0 0 10px #ff00b7; /* Réduit la taille de l'ombre et l'intensité */
+}
+
 .back-button {
             position: absolute;
             top: 10px;
@@ -241,6 +252,8 @@
                 <li><span style="color: blue;">Rare</span>: 35%</li>
                 <li><span style="color: purple;">Epique</span>: 12%</li>
                 <li><span style="color: gold;">Légendaire</span>: 2%</li>
+                <li><span style="color: rgb(255, 0, 0);">Spécial</span>: 0.2%</li>
+                <li><span style="color: rgb(255, 0, 212);">Arc-en-ciel</span>: 0.05%</li>
             </ul>
         </div>
 
@@ -294,22 +307,43 @@
             { name: "Gilberto le camionneur", rarity: "Epique", "type": "Humain", weight: 12, image: "8.png" },
             { name: "Enceinte à musique", rarity: "Rare", "type": "Humain", weight: 35, image: "9.png" }, 
             { name: "Pierre la pierre", rarity: "Rare", "type": "Objet", weight: 35, image: "10.png" }, 
-            { name: "TireXhandicapé", rarity: "Epique", "type": "Animal", weight: 12, image: "11.png" },      
+            { name: "TireXhandicapé", rarity: "Epique", "type": "Animal", weight: 12, image: "11.png" },
+            { name: "Radolf le magicien", rarity: "Arc-en-ciel", "type": "Prestige", weight: 0.05, image: "12.png" },
+            { name: "Le manouche prend sa douche", rarity: "Commune", "type": "Animal", weight: 60, image: "13.png" },
+            { name: "Pedro au quais ", rarity: "Rare", "type": "Animal", weight: 35, image: "14.png" },      
+            { name: "Raoul ça roule", rarity: "Epique", "type": "Objet", weight: 12, image: "15.png" },
+            { name: "Gaston le ballon", rarity: "Rare", "type": "Objet", weight: 35, image: "16.png" },
+            { name: "Stéphane carry", rarity: "Légendaire", "type": "Objet", weight: 2, image: "17.png" },
+            { name: "Carotte qui rote", rarity: "Rare", "type": "Objet", weight: 35, image: "18.png" },     
+            { name: "Tron pète", rarity: "Commune", "type": "Objet", weight: 60, image: "19.png" },
+            { name: "Glaçons maçon", rarity: "Rare", "type": "Objet", weight: 35, image: "20.png" },
         ];
 
         // Tableau statique des cartes disponibles
 const availableCards = [
-            { name: "Radolf le magicien", rarity: "Epique", image: "1.png" },
-            { name: "El verme musician", rarity: "Rare", image: "2.png" },      
-            { name: "Eau mouillée", rarity: "Epique", image: "3.png" },
+            { name: "Radolf le magicien", rarity: "Arc-en-ciel", image: "12.png" },
             { name: "Le dos fin", rarity: "Légendaire", image: "4.png" },
-            { name: "Chococaca", rarity: "Rare", image: "5.png" }, 
+            { name: "Stéphane carry", rarity: "Légendaire", image: "17.png" },
+            { name: "Radolf le magicien", rarity: "Epique", image: "1.png" },
+            { name: "Eau mouillée", rarity: "Epique", image: "3.png" },
             { name: "Père pète", rarity: "Epique", image: "6.png" },
-            { name: "Cervoloant", rarity: "Commune",image: "7.png" },
-            { name: "Gilberto le camionneur", rarity: "Epique", image: "8.png" },
+            { name: "Gilberto le camionneur", rarity: "Epique", image: "8.png" },     
+            { name: "TireXhandicapé", rarity: "Epique", image: "11.png" },
+            { name: "Raoul ça roule", rarity: "Epique", image: "15.png" },
+            { name: "Chococaca", rarity: "Rare", image: "5.png" }, 
+            { name: "El verme musician", rarity: "Rare", image: "2.png" }, 
             { name: "Enceinte à musique", rarity: "Rare", image: "9.png" }, 
             { name: "Pierre la pierre", rarity: "Rare", image: "10.png" }, 
-            { name: "TireXhandicapé", rarity: "Epique", image: "11.png" },
+            { name: "Pedro au quais ", rarity: "Rare", image: "14.png" },
+            { name: "Gaston le ballon", rarity: "Rare", image: "16.png" },
+            { name: "Carotte qui rote", rarity: "Rare", image: "18.png" },
+            { name: "Glaçons maçon", rarity: "Rare", image: "20.png" },      
+            { name: "Le manouche prend sa douche", rarity: "Commune", image: "13.png" },
+            { name: "Cervoloant", rarity: "Commune",image: "7.png" },
+            { name: "Tron pète", rarity: "Commune", image: "19.png" },   
+              
+            
+            
 ];
         
 
@@ -333,6 +367,7 @@ function getRandomReward() {
         function updateAvailableCoins() {
             const coinsDisplay = document.getElementById('coins-display');
             coinsDisplay.textContent = `Pièces disponibles : ${availableCoins}`;
+
         }
 
         function loadCoins() {
@@ -388,7 +423,7 @@ function saveRewardToCollection(reward) {
 }
 
 function multiSummon() {
-    const cost = 500; // Coût pour invocation x10
+    const cost = 0; // Coût pour invocation x10
     if (!canSummon(cost)) {
         alert("Vous n'avez pas assez de pièces pour une invocation x10 !");
         return;
@@ -473,7 +508,7 @@ function toggleAvailableCards() {
             // Créer le texte de la carte
             const cardText = document.createElement('div');
             cardText.classList.add('reward-text-bottom');
-            cardText.textContent = `${card.name} (${card.rarity})`;
+            cardText.textContent = `${card.name} (${card.rarity})`;  // Correction ici
             cardElement.appendChild(cardText);
 
             // Ajouter l'élément carte au conteneur
@@ -486,6 +521,7 @@ function toggleAvailableCards() {
 }
 
 
+
         // Chargement des pièces disponibles au démarrage
         document.addEventListener('DOMContentLoaded', loadCoins);
 
@@ -495,6 +531,7 @@ function toggleAvailableCards() {
             localStorage.setItem('rouletteCount', rouletteCount);
             document.getElementById('invocationCountDisplay').textContent = `Invocations : ${invocationCount}`;
             document.getElementById('rouletteCountDisplay').textContent = `Roulettes : ${rouletteCount}`;
+
         }
     </script>
 
