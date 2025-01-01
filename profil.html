@@ -155,7 +155,6 @@
     <!-- Section de connexion avec un bouton Google -->
     <div class="login-container" id="loginContainer">
         <h2>Se connecter</h2>
-        <!-- Bouton de connexion sans onClick directement dans HTML -->
         <button id="googleSignInButton">Se connecter avec Google</button>
     </div>
 
@@ -190,19 +189,42 @@
 
         // Configuration de Firebase
         const firebaseConfig = {
-          apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
-          authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
-          projectId: "jeu-de-carte-dfa51",
-          storageBucket: "jeu-de-carte-dfa51.firebasestorage.app",
-          messagingSenderId: "684513159935",
-          appId: "1:684513159935:web:17820c82672d6527ff7aca",
-          measurementId: "G-F3P0WW2R3H"
+            apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
+            authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
+            projectId: "jeu-de-carte-dfa51",
+            storageBucket: "jeu-de-carte-dfa51.firebasestorage.app",
+            messagingSenderId: "684513159935",
+            appId: "1:684513159935:web:17820c82672d6527ff7aca",
+            measurementId: "G-F3P0WW2R3H"
         };
 
         // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        let startTime;
+        let timerInterval;
+
+        // Fonction pour démarrer le timer
+        function startPlayTimeTimer() {
+            startTime = Date.now(); // Enregistrer l'heure de début
+            timerInterval = setInterval(updatePlayTime, 1000);
+        }
+
+        // Fonction pour mettre à jour le temps de jeu
+        function updatePlayTime() {
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - startTime; // Temps écoulé en millisecondes
+
+            // Convertir le temps en heures, minutes et secondes
+            const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+            const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+            // Afficher le temps de jeu dans l'élément correspondant
+            document.getElementById('playTime').textContent = `Temps de jeu : ${hours}h ${minutes}m ${seconds}s`;
+        }
 
         // Fonction de connexion avec Google
         function signInWithGoogle() {
@@ -214,6 +236,7 @@
                     document.getElementById('loginContainer').style.display = 'none';
                     document.getElementById('contentBox').style.display = 'block';
                     loadProfileData(user.uid); // Charger les données du profil de l'utilisateur
+                    startPlayTimeTimer(); // Démarrer le timer du temps de jeu
                 })
                 .catch((error) => {
                     console.error("Erreur de connexion : ", error.message);
@@ -241,6 +264,7 @@
                 document.getElementById('loginContainer').style.display = 'none'; // Masquer la section de connexion
                 document.getElementById('contentBox').style.display = 'block'; // Afficher le profil
                 loadProfileData(user.uid); // Charger les données de l'utilisateur
+                startPlayTimeTimer(); // Démarrer le timer
             } else {
                 document.getElementById('loginContainer').style.display = 'block'; // Afficher la section de connexion
                 document.getElementById('contentBox').style.display = 'none'; // Masquer la section du profil
