@@ -183,20 +183,27 @@
 
 
     <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"; 
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-    const firebaseConfig = {
-        apiKey: "Votre-apiKey",
-        authDomain: "Votre-authDomain",
-        projectId: "Votre-projectId",
-        storageBucket: "Votre-storageBucket",
-        messagingSenderId: "Votre-messagingSenderId",
-        appId: "Votre-appId",
-        measurementId: "Votre-measurementId"
-    };
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
+    authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
+    projectId: "jeu-de-carte-dfa51",
+    storageBucket: "jeu-de-carte-dfa51.firebasestorage.app",
+    messagingSenderId: "684513159935",
+    appId: "1:684513159935:web:17820c82672d6527ff7aca",
+    measurementId: "G-F3P0WW2R3H"
+  };
 
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
     // Initialiser Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
