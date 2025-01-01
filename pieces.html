@@ -165,14 +165,14 @@
         }
 
         #increment-selector {
-    margin-left: 10px;
-    padding: 5px;
-    font-size: 16px;
-    border: 1px solid #333;
-    border-radius: 5px;
-    background-color: #fff;
-    cursor: pointer;
-}
+            margin-left: 10px;
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+        }
 
     </style>
 </head>
@@ -234,22 +234,22 @@
 
 
         // Fonction pour mettre à jour l'affichage du compteur de pièces
-function updateCoinCounter() {
-    document.getElementById('coins-counter').textContent = Pièces: ${totalCoins};
-    localStorage.setItem('totalCoins', totalCoins); // Sauvegarde dans le stockage local
-}
+        function updateCoinCounter() {
+            document.getElementById('coins-counter').textContent = `Pièces: ${totalCoins}`;
+            localStorage.setItem('totalCoins', totalCoins); // Sauvegarde dans le stockage local
+        }
 
         // Fonction pour ajuster les pièces (maintenant les pièces peuvent être négatives)
-function adjustCoins(amount) {
-    totalCoins += amount;
-    updateCoinCounter();
-}
+        function adjustCoins(amount) {
+            totalCoins += amount;
+            updateCoinCounter();
+        }
 
-       // Mettre à jour la valeur de l'incrément selon la sélection
-function updateIncrementValue() {
-    const selector = document.getElementById('increment-selector');
-    incrementValue = parseInt(selector.value, 10);
-}
+        // Mettre à jour la valeur de l'incrément selon la sélection
+        function updateIncrementValue() {
+            const selector = document.getElementById('increment-selector');
+            incrementValue = parseInt(selector.value, 10);
+        }
 
         function checkSpinAvailability() {
             const lastSpinTime = localStorage.getItem('lastSpinTime');
@@ -266,7 +266,7 @@ function updateIncrementValue() {
                     const secondsRemaining = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
                     // Mise à jour de l'affichage du décompte
-                    document.getElementById('timer').textContent = Prochain spin dans : ${hoursRemaining}h ${minutesRemaining}m ${secondsRemaining}s;
+                    document.getElementById('timer').textContent = `Prochain spin dans : ${hoursRemaining}h ${minutesRemaining}m ${secondsRemaining}s`;
                     document.getElementById('spin-button').disabled = true;  // Désactivation du bouton spin
                 } else {
                     // Le temps est écoulé, réinitialisation
@@ -339,7 +339,7 @@ function updateIncrementValue() {
                             light.style.display = 'none';
                         });
 
-                        centerSlot.textContent = ${randomPrize} Pièces;
+                        centerSlot.textContent = `${randomPrize} Pièces`;
 
                         // Ajouter les pièces gagnées
                         totalCoins += parseInt(randomPrize);
