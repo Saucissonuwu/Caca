@@ -256,23 +256,33 @@
                 });
         }
 
-        // Charger les données du profil
+        // Charger les données du profil d'un utilisateur
         function loadProfileData(uid) {
-            const userRef = doc(db, "users", uid);
+            const userRef = doc(db, "users", uid); // Référence au document de l'utilisateur
             getDoc(userRef).then((docSnap) => {
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
+                    console.log("Données de l'utilisateur récupérées :", userData);
+                    
+                    // Mettre à jour l'interface avec les données récupérées
                     document.getElementById('rouletteCount').textContent = userData.rouletteCount || 0;
                     document.getElementById('invocationCount').textContent = userData.invocationCount || 0;
+                    document.getElementById('playTime').textContent = formatPlayTime(userData.playTime || 0);
                     document.getElementById('profilePic').src = userData.profilePic || "default-avatar.png";
-
-                    // Récupérer le temps de jeu enregistré (si présent)
-                    userTimerStart = userData.playTime || 0;
-                    document.getElementById('playTime').textContent = `Temps de jeu : ${Math.floor(userTimerStart / (1000 * 60 * 60))}h ${Math.floor((userTimerStart % (1000 * 60 * 60)) / (1000 * 60))}m ${Math.floor((userTimerStart % (1000 * 60)) / 1000)}s`;
+                } else {
+                    console.log("Le document n'existe pas !");
                 }
             }).catch((error) => {
                 console.error("Erreur de lecture des données utilisateur : ", error.message);
             });
+        }
+
+        // Fonction pour formater le temps de jeu
+        function formatPlayTime(ms) {
+            const hours = Math.floor(ms / (1000 * 60 * 60));
+            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+            return `${hours}h ${minutes}m ${seconds}s`;
         }
 
         // Détecter l'état de l'utilisateur
