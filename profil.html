@@ -155,7 +155,8 @@
     <!-- Section de connexion avec un bouton Google -->
     <div class="login-container" id="loginContainer">
         <h2>Se connecter</h2>
-        <button onclick="signInWithGoogle()">Se connecter avec Google</button>
+        <!-- Bouton de connexion sans onClick directement dans HTML -->
+        <button id="googleSignInButton">Se connecter avec Google</button>
     </div>
 
     <!-- Conteneur principal avec effet 3D (caché tant que l'utilisateur n'est pas connecté) -->
@@ -181,79 +182,73 @@
     <!-- Champ de téléchargement de fichier caché -->
     <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic(event)">
 
-
     <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+        // Importer les fonctions nécessaires de Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
-    authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
-    projectId: "jeu-de-carte-dfa51",
-    storageBucket: "jeu-de-carte-dfa51.firebasestorage.app",
-    messagingSenderId: "684513159935",
-    appId: "1:684513159935:web:17820c82672d6527ff7aca",
-    measurementId: "G-F3P0WW2R3H"
-  };
+        // Configuration de Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
+          authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
+          projectId: "jeu-de-carte-dfa51",
+          storageBucket: "jeu-de-carte-dfa51.firebasestorage.app",
+          messagingSenderId: "684513159935",
+          appId: "1:684513159935:web:17820c82672d6527ff7aca",
+          measurementId: "G-F3P0WW2R3H"
+        };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-    // Initialiser Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    // Fonction pour se connecter avec Google
-    function signInWithGoogle() {
-        const provider = new GoogleAuthProvider(); // Créer un provider Google
-        signInWithPopup(auth, provider)  // Utiliser signInWithPopup pour ouvrir la fenêtre pop-up de connexion
-            .then((result) => {
-                const user = result.user;
-                console.log("Utilisateur connecté : ", user);
-            })
-            .catch((error) => {
-                console.error("Erreur de connexion : ", error.message);
-                alert("Erreur de connexion, vérifiez la console.");
-            });
-    }
-        }
-    
-        // Fonction pour charger les données du profil
-        function loadProfileData() {
-            if (auth.currentUser) {
-                const user = auth.currentUser;
-                db.collection("users").doc(user.uid).get().then((doc) => {
-                    if (doc.exists) {
-                        const userData = doc.data();
-                        document.getElementById('rouletteCount').textContent = userData.rouletteCount || 0;
-                        document.getElementById('invocationCount').textContent = userData.invocationCount || 0;
-                        document.getElementById('profilePic').src = userData.profilePic || "default-avatar.png";
-                    }
-                }).catch((error) => {
-                    console.error("Erreur de lecture des données utilisateur : ", error.message);
+        // Fonction de connexion avec Google
+        function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    console.log("Utilisateur connecté : ", user);
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('contentBox').style.display = 'block';
+                    loadProfileData(user.uid); // Charger les données du profil de l'utilisateur
+                })
+                .catch((error) => {
+                    console.error("Erreur de connexion : ", error.message);
                 });
-            }
         }
-    
+
+        // Charger les données du profil
+        function loadProfileData(uid) {
+            const userRef = doc(db, "users", uid);
+            getDoc(userRef).then((docSnap) => {
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    document.getElementById('rouletteCount').textContent = userData.rouletteCount || 0;
+                    document.getElementById('invocationCount').textContent = userData.invocationCount || 0;
+                    document.getElementById('profilePic').src = userData.profilePic || "default-avatar.png";
+                }
+            }).catch((error) => {
+                console.error("Erreur de lecture des données utilisateur : ", error.message);
+            });
+        }
+
         // Détecter l'état de l'utilisateur
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // L'utilisateur est connecté
-                console.log("Utilisateur actuellement connecté : ", user);
                 document.getElementById('loginContainer').style.display = 'none'; // Masquer la section de connexion
                 document.getElementById('contentBox').style.display = 'block'; // Afficher le profil
-                loadProfileData(); // Charger les données de l'utilisateur
+                loadProfileData(user.uid); // Charger les données de l'utilisateur
             } else {
-                // L'utilisateur n'est pas connecté
                 document.getElementById('loginContainer').style.display = 'block'; // Afficher la section de connexion
                 document.getElementById('contentBox').style.display = 'none'; // Masquer la section du profil
             }
         });
+
+        // Attacher un gestionnaire d'événements au bouton de connexion Google
+        document.getElementById('googleSignInButton').addEventListener('click', signInWithGoogle);
     </script>
 
 </body>
