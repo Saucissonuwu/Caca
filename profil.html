@@ -184,8 +184,8 @@
     <script type="module">
         // Importer les fonctions nécessaires de Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
         // Configuration de Firebase
         const firebaseConfig = {
@@ -205,6 +205,7 @@
 
         let startTime;
         let timerInterval;
+        let userTimerStart = 0; // Temps de jeu initial (en millisecondes)
 
         // Fonction pour démarrer le timer
         function startPlayTimeTimer() {
@@ -215,7 +216,7 @@
         // Fonction pour mettre à jour le temps de jeu
         function updatePlayTime() {
             const currentTime = Date.now();
-            const elapsedTime = currentTime - startTime; // Temps écoulé en millisecondes
+            const elapsedTime = currentTime - startTime + userTimerStart; // Temps écoulé en millisecondes (en tenant compte de l'ancien temps)
 
             // Convertir le temps en heures, minutes et secondes
             const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
@@ -224,6 +225,18 @@
 
             // Afficher le temps de jeu dans l'élément correspondant
             document.getElementById('playTime').textContent = `Temps de jeu : ${hours}h ${minutes}m ${seconds}s`;
+
+            // Sauvegarder le temps dans Firestore
+            savePlayTime(elapsedTime);
+        }
+
+        // Sauvegarder le temps de jeu dans Firestore
+        function savePlayTime(elapsedTime) {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = doc(db, "users", user.uid);
+                setDoc(userRef, { playTime: elapsedTime }, { merge: true }); // Sauvegarder le temps de jeu
+            }
         }
 
         // Fonction de connexion avec Google
@@ -252,6 +265,10 @@
                     document.getElementById('rouletteCount').textContent = userData.rouletteCount || 0;
                     document.getElementById('invocationCount').textContent = userData.invocationCount || 0;
                     document.getElementById('profilePic').src = userData.profilePic || "default-avatar.png";
+
+                    // Récupérer le temps de jeu enregistré (si présent)
+                    userTimerStart = userData.playTime || 0;
+                    document.getElementById('playTime').textContent = `Temps de jeu : ${Math.floor(userTimerStart / (1000 * 60 * 60))}h ${Math.floor((userTimerStart % (1000 * 60 * 60)) / (1000 * 60))}m ${Math.floor((userTimerStart % (1000 * 60)) / 1000)}s`;
                 }
             }).catch((error) => {
                 console.error("Erreur de lecture des données utilisateur : ", error.message);
@@ -259,7 +276,7 @@
         }
 
         // Détecter l'état de l'utilisateur
-        auth.onAuthStateChanged((user) => {
+        onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('loginContainer').style.display = 'none'; // Masquer la section de connexion
                 document.getElementById('contentBox').style.display = 'block'; // Afficher le profil
