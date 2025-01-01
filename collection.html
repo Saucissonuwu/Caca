@@ -167,7 +167,7 @@
 
             // Compter les occurrences de chaque récompense
             const rewardCounts = rewardsCollection.reduce((acc, reward) => {
-                const key = ${reward.name} (${reward.rarity});
+               const key = `${reward.name} (${reward.rarity})`;
                 if (acc[key]) {
                     acc[key]++;
                 } else {
@@ -180,7 +180,7 @@
             Object.keys(rewardCounts).forEach(key => {
                 const [name, rarity] = key.split(' (');
                 const count = rewardCounts[key];
-                const rewardData = rewardsCollection.find(r => ${r.name} (${r.rarity}) === key);
+                const rewardData = rewardsCollection.find(r => `${r.name} (${r.rarity})` === key);
 
                 const rewardElement = document.createElement('div');
                 rewardElement.classList.add('reward');
@@ -201,7 +201,7 @@
                 // Ajouter le comptage des doublons
                 const rewardCountElement = document.createElement('div');
                 rewardCountElement.classList.add('reward-count');
-                rewardCountElement.textContent = x${count};
+                rewardCountElement.textContent = `x${count}`;
                 rewardElement.appendChild(rewardCountElement);
 
                 collectionContainer.appendChild(rewardElement);
@@ -210,7 +210,7 @@
 
         function updateCounter(uniqueCount) {
             const counter = document.getElementById('collection-counter');
-            counter.textContent = Cartes collectées : ${uniqueCount} / ${MAX_CARDS};
+            counter.textContent = `Cartes collectées : ${uniqueCount} / ${MAX_CARDS}`;
         }
 
         function showModal(imageSrc) {
