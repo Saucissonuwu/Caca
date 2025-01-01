@@ -113,6 +113,12 @@
             font-weight: bold;
             background-color: #f0f0f0;
             position: relative;
+            transition: background-color 0.3s ease;
+        }
+
+        .segment.active {
+            background-color: #f39c12; /* Couleur d'illumination */
+            box-shadow: 0 0 15px 5px rgba(243, 156, 18, 0.7); /* Effet lumineux */
         }
 
         .center-slot {
@@ -174,17 +180,10 @@
             cursor: pointer;
         }
 
-        /* Style de l'indicateur light */
-        .light {
-            width: 10px;
-            height: 10px;
-            background-color: red; /* Couleur de l'indicateur */
-            border-radius: 50%;
-            position: absolute;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none;
+        .timer {
+            font-size: 18px;
+            color: #e74c3c;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -208,39 +207,20 @@
                 </ul>
             </div>
             <div class="segment-row">
-                <div class="segment" data-prize="50">
-                    <div class="light"></div> <!-- Indicateur light -->
-                    50 Pièces
-                </div>
-                <div class="segment" data-prize="100">
-                    <div class="light"></div> <!-- Indicateur light -->
-                    100 Pièces
-                </div>
-                <div class="segment" data-prize="200">
-                    <div class="light"></div> <!-- Indicateur light -->
-                    200 Pièces
-                </div>
+                <div class="segment" data-prize="50">50 Pièces</div>
+                <div class="segment" data-prize="100">100 Pièces</div>
+                <div class="segment" data-prize="200">200 Pièces</div>
             </div>
             <div class="center-slot" id="center-slot">?</div>
             <div class="segment-row">
-                <div class="segment" data-prize="300">
-                    <div class="light"></div> <!-- Indicateur light -->
-                    300 Pièces
-                </div>
-                <div class="segment" data-prize="500">
-                    <div class="light"></div> <!-- Indicateur light -->
-                    500 Pièces
-                </div>
-                <div class="segment" data-prize="1000">
-                    <div class="light"></div> <!-- Indicateur light -->
-                    1000 Pièces
-                </div>
+                <div class="segment" data-prize="300">300 Pièces</div>
+                <div class="segment" data-prize="500">500 Pièces</div>
+                <div class="segment" data-prize="1000">1000 Pièces</div>
             </div>
         </div>
     </div>
 
     <div class="coins-control">
-        <!-- Boutons pour ajuster les pièces -->
         <button class="coins-button" onclick="adjustCoins(-incrementValue)">-</button>
         <button class="coins-button" onclick="adjustCoins(incrementValue)">+</button>
         <select id="increment-selector" onchange="updateIncrementValue()">
@@ -259,22 +239,18 @@
     <script>
         let spinning = false;
         let totalCoins = 0; // Variable pour stocker le nombre total de pièces
-        let rouletteCount = parseInt(localStorage.getItem('rouletteCount')) || 0;
         let incrementValue = 10; // Valeur par défaut de l'incrément
 
-        // Fonction pour mettre à jour l'affichage du compteur de pièces
         function updateCoinCounter() {
             document.getElementById('coins-counter').textContent = `Pièces: ${totalCoins}`;
             localStorage.setItem('totalCoins', totalCoins); // Sauvegarde dans le stockage local
         }
 
-        // Fonction pour ajuster les pièces
         function adjustCoins(amount) {
             totalCoins += amount;
             updateCoinCounter();
         }
 
-        // Mettre à jour la valeur de l'incrément selon la sélection
         function updateIncrementValue() {
             const selector = document.getElementById('increment-selector');
             incrementValue = parseInt(selector.value, 10);
@@ -310,7 +286,6 @@
             localStorage.setItem('lastSpinTime', now);
         }
 
-        // Lancer la roulette
         function spinRoulette() {
             if (spinning) return;
             spinning = true;
@@ -318,7 +293,6 @@
             const segments = document.querySelectorAll('.segment');
             const centerSlot = document.getElementById('center-slot');
 
-            // Probabilités personnalisées
             const prizes = [
                 { prize: "50", weight: 70 },
                 { prize: "100", weight: 35 },
@@ -345,8 +319,10 @@
 
             const interval = setInterval(() => {
                 segments.forEach((segment, index) => {
-                    const light = segment.querySelector('.light');
-                    light.style.display = index === currentIndex ? 'block' : 'none';
+                    segment.classList.remove('active');
+                    if (index === currentIndex) {
+                        segment.classList.add('active'); // Ajouter la classe active pour illuminer
+                    }
                 });
 
                 if (rotations > 0) {
@@ -357,20 +333,15 @@
                     spinning = false;
 
                     setTimeout(() => {
-                        segments.forEach(segment => {
-                            const light = segment.querySelector('.light');
-                            light.style.display = 'none';
-                        });
+                        segments.forEach(segment => segment.classList.remove('active'));
 
                         centerSlot.textContent = `${randomPrize} Pièces`;
 
-                        // Ajouter les pièces gagnées
                         totalCoins += parseInt(randomPrize);
                         updateCoinCounter();
 
-                        // Sauvegarder le temps du dernier spin
                         updateLastSpinTime();
-                        checkSpinAvailability(); // Mettre à jour la disponibilité du spin
+                        checkSpinAvailability();
                     }, 100);
                 } else {
                     currentIndex = (currentIndex + 1) % segments.length;
@@ -378,13 +349,11 @@
             }, 100);
         }
 
-        // Fonction pour afficher/masquer le popup d'informations
         function toggleInfo() {
             const infoPopup = document.getElementById('info-popup');
             infoPopup.style.display = infoPopup.style.display === 'block' ? 'none' : 'block';
         }
 
-        // Initialisation de l'état de la roulette
         checkSpinAvailability();
     </script>
 </body>
