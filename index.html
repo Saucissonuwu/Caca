@@ -71,9 +71,8 @@
             box-shadow: 3px 6px 15px rgba(0, 0, 0, 0.5);
         }
 
-        /* Styles du bouton de connexion Google */
-       #googleSignInButton {
-             padding: 15px 30px;
+        #googleSignInButton {
+            padding: 15px 30px;
             font-size: 18px;
             margin: 10px;
             border: none;
@@ -90,17 +89,41 @@
             transform: scale(1.1);
             box-shadow: 3px 6px 15px rgba(0, 0, 0, 0.5);
         }
+
+        #discordButton {
+            background: #5865F2;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 25px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+        }
+
+        #discordButton img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        #discordButton:hover {
+            transform: scale(1.1);
+            box-shadow: 3px 6px 15px rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
 <body>
 
-    <!-- Section de connexion avec un bouton Google -->
     <div class="login-container" id="loginContainer" style="display: block;">
         <h2>Se connecter</h2>
         <button id="googleSignInButton">Se connecter avec Google</button>
     </div>
 
-    <!-- Conteneur principal avec effet 3D (caché tant que l'utilisateur n'est pas connecté) -->
     <div class="content-box" id="contentBox" style="display: none;">
         <h1>Jeu Créatif</h1>
 
@@ -109,14 +132,17 @@
             <button onclick="window.location.href='invocation.html'">Invocation</button>
             <button onclick="window.location.href='collection.html'">Collection</button>
         </div>
+
+        <a id="discordButton" href="https://discord.gg/votre-lien-serveur" target="_blank">
+            <img src="https://cdn.iconscout.com/icon/free/png-256/discord-2474804-2056091.png" alt="Discord Icon">
+            Rejoindre le serveur Discord
+        </a>
     </div>
 
     <script type="module">
-        // Importer les fonctions nécessaires de Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
-        // Configuration de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
             authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
@@ -127,19 +153,14 @@
             measurementId: "G-F3P0WW2R3H"
         };
 
-        // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Fonction de connexion avec Google
         function signInWithGoogle() {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider)
                 .then((result) => {
                     const user = result.user;
-                    console.log("Utilisateur connecté : ", user);
-
-                    // Masquer le formulaire de connexion et afficher le contenu principal
                     document.getElementById('loginContainer').style.display = 'none';
                     document.getElementById('contentBox').style.display = 'block';
                 })
@@ -148,20 +169,16 @@
                 });
         }
 
-        // Vérifier l'état de la connexion de l'utilisateur
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Utilisateur connecté
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('contentBox').style.display = 'block';
             } else {
-                // Utilisateur non connecté
                 document.getElementById('loginContainer').style.display = 'block';
                 document.getElementById('contentBox').style.display = 'none';
             }
         });
 
-        // Attacher un gestionnaire d'événements au bouton de connexion Google
         document.getElementById('googleSignInButton').addEventListener('click', signInWithGoogle);
     </script>
 
