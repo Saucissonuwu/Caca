@@ -240,6 +240,7 @@
         let spinning = false;
         let totalCoins = 0; // Variable pour stocker le nombre total de pièces
         let incrementValue = 10; // Valeur par défaut de l'incrément
+        let countdownInterval = null;
 
         function updateCoinCounter() {
             document.getElementById('coins-counter').textContent = `Pièces: ${totalCoins}`;
@@ -265,11 +266,7 @@
                 const timeLeft = 3 * 60 * 60 * 1000 - timeDiff;
 
                 if (timeLeft > 0) {
-                    const hoursRemaining = Math.floor(timeLeft / (1000 * 60 * 60));
-                    const minutesRemaining = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                    const secondsRemaining = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                    document.getElementById('timer').textContent = `Prochain spin dans : ${hoursRemaining}h ${minutesRemaining}m ${secondsRemaining}s`;
+                    updateTimer(timeLeft);
                     document.getElementById('spin-button').disabled = true;
                 } else {
                     document.getElementById('timer').textContent = '';
@@ -279,6 +276,14 @@
                 document.getElementById('timer').textContent = '';
                 document.getElementById('spin-button').disabled = false;
             }
+        }
+
+        function updateTimer(timeLeft) {
+            const hoursRemaining = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutesRemaining = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const secondsRemaining = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById('timer').textContent = `Prochain spin dans : ${hoursRemaining}h ${minutesRemaining}m ${secondsRemaining}s`;
         }
 
         function updateLastSpinTime() {
@@ -353,6 +358,24 @@
             const infoPopup = document.getElementById('info-popup');
             infoPopup.style.display = infoPopup.style.display === 'block' ? 'none' : 'block';
         }
+
+        // Mettre à jour le compteur de spin toutes les secondes
+        function liveUpdate() {
+            const lastSpinTime = localStorage.getItem('lastSpinTime');
+            const now = new Date().getTime();
+
+            if (lastSpinTime) {
+                const timeDiff = now - lastSpinTime;
+                const timeLeft = 3 * 60 * 60 * 1000 - timeDiff;
+
+                if (timeLeft > 0) {
+                    updateTimer(timeLeft);
+                }
+            }
+        }
+
+        // Mettre à jour le compteur à rebours chaque seconde
+        setInterval(liveUpdate, 1000);
 
         checkSpinAvailability();
     </script>
