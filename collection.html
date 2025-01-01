@@ -23,7 +23,7 @@
             margin: 20px;
         }
 
-        .sort-button {
+        .sort-button, .manage-button {
             padding: 10px 20px;
             font-size: 16px;
             background-color: #2ecc71;
@@ -32,10 +32,38 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-right: 10px;
         }
 
-        .sort-button:hover {
+        .sort-button:hover, .manage-button:hover {
             background-color: #27ae60;
+        }
+
+        .manage-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            left: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .manage-menu button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .manage-menu button:hover {
+            background-color: #2980b9;
         }
 
         .collection-container {
@@ -128,6 +156,11 @@
 
     <div class="controls">
         <button class="sort-button" onclick="sortCollection()">Trier par Rareté</button>
+        <button class="manage-button" onclick="toggleManageMenu()">Ajouter / Supprimer</button>
+        <div class="manage-menu" id="manage-menu">
+            <button onclick="addItem()">Ajouter une Carte</button>
+            <button onclick="removeItem()">Supprimer une Carte</button>
+        </div>
     </div>
 
     <div class="collection-container" id="collection-container">
@@ -232,6 +265,21 @@
             rewardsCollection.sort((a, b) => b.weight - a.weight);
 
             renderCollection(rewardsCollection);
+        }
+
+        function toggleManageMenu() {
+            const menu = document.getElementById('manage-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function addItem() {
+            // Logique pour ajouter une carte
+            alert("Ajouter une carte à la collection.");
+        }
+
+        function removeItem() {
+            // Logique pour supprimer une carte
+            alert("Supprimer une carte de la collection.");
         }
 
         // Charger la collection au démarrage
