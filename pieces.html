@@ -235,7 +235,7 @@
 
         // Fonction pour mettre à jour l'affichage du compteur de pièces
 function updateCoinCounter() {
-    document.getElementById('coins-counter').textContent = `Pièces: ${totalCoins}`;
+    document.getElementById('coins-counter').textContent = Pièces: ${totalCoins};
     localStorage.setItem('totalCoins', totalCoins); // Sauvegarde dans le stockage local
 }
 
@@ -251,43 +251,35 @@ function updateIncrementValue() {
     incrementValue = parseInt(selector.value, 10);
 }
 
-       function checkSpinAvailability() {
-    const lastSpinTime = localStorage.getItem('lastSpinTime');
-    const now = new Date().getTime();
-    
-    console.log('Dernier spin à:', lastSpinTime);
-    console.log('Heure actuelle:', now);
+        function checkSpinAvailability() {
+            const lastSpinTime = localStorage.getItem('lastSpinTime');
+            const now = new Date().getTime();
 
-    if (lastSpinTime) {
-        const timeDiff = now - lastSpinTime;  // Calcul de la différence de temps depuis le dernier spin
-        const timeLeft = 3 * 60 * 60 * 1000 - timeDiff;  // Temps restant jusqu'à 3 heures (en millisecondes)
+            if (lastSpinTime) {
+                const timeDiff = now - lastSpinTime;  // Calcul de la différence de temps depuis le dernier spin
+                const timeLeft = 3 * 60 * 60 * 1000 - timeDiff;  // Temps restant jusqu'à 3 heures (en millisecondes)
 
-        console.log('Temps écoulé depuis le dernier spin:', timeDiff);
-        console.log('Temps restant pour le prochain spin:', timeLeft);
+                if (timeLeft > 0) {
+                    // Calcul du temps restant en heures, minutes et secondes
+                    const hoursRemaining = Math.floor(timeLeft / (1000 * 60 * 60));
+                    const minutesRemaining = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const secondsRemaining = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        if (timeLeft > 0) {
-            // Calcul du temps restant en heures, minutes et secondes
-            const hoursRemaining = Math.floor(timeLeft / (1000 * 60 * 60));
-            const minutesRemaining = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const secondsRemaining = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-            // Mise à jour de l'affichage du décompte
-            document.getElementById('timer').textContent = `Prochain spin dans : ${hoursRemaining}h ${minutesRemaining}m ${secondsRemaining}s`;
-            document.getElementById('spin-button').disabled = true;  // Désactivation du bouton spin
-            console.log('Spin désactivé. Prochain spin dans:', hoursRemaining, minutesRemaining, secondsRemaining);
-        } else {
-            // Le temps est écoulé, réinitialisation
-            document.getElementById('timer').textContent = '';
-            document.getElementById('spin-button').disabled = false;  // Activation du bouton spin
-            console.log('Le spin est maintenant disponible.');
+                    // Mise à jour de l'affichage du décompte
+                    document.getElementById('timer').textContent = Prochain spin dans : ${hoursRemaining}h ${minutesRemaining}m ${secondsRemaining}s;
+                    document.getElementById('spin-button').disabled = true;  // Désactivation du bouton spin
+                } else {
+                    // Le temps est écoulé, réinitialisation
+                    document.getElementById('timer').textContent = '';
+                    document.getElementById('spin-button').disabled = false;  // Activation du bouton spin
+                }
+            } else {
+                // Si aucun spin n'a eu lieu auparavant, on affiche le bouton comme disponible
+                document.getElementById('timer').textContent = '';
+                document.getElementById('spin-button').disabled = false;
+            }
         }
-    } else {
-        // Si aucun spin n'a eu lieu auparavant, on affiche le bouton comme disponible
-        document.getElementById('timer').textContent = '';
-        document.getElementById('spin-button').disabled = false;
-        console.log('Pas de précédent spin trouvé, le spin est disponible.');
-    }
-}
+
         // Sauvegarder le temps du dernier spin
         function updateLastSpinTime() {
             const now = new Date().getTime();
@@ -347,7 +339,7 @@ function updateIncrementValue() {
                             light.style.display = 'none';
                         });
 
-                        centerSlot.textContent = `${randomPrize} Pièces`;
+                        centerSlot.textContent = ${randomPrize} Pièces;
 
                         // Ajouter les pièces gagnées
                         totalCoins += parseInt(randomPrize);
