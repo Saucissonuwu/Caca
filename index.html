@@ -95,8 +95,14 @@
 </head>
 <body>
 
-    <!-- Conteneur principal avec effet 3D -->
-    <div class="content-box">
+    <!-- Section de connexion avec un bouton Google -->
+    <div class="login-container" id="loginContainer" style="display: block;">
+        <h2>Se connecter</h2>
+        <button id="googleSignInButton">Se connecter avec Google</button>
+    </div>
+
+    <!-- Conteneur principal avec effet 3D (caché tant que l'utilisateur n'est pas connecté) -->
+    <div class="content-box" id="contentBox" style="display: none;">
         <h1>Jeu Créatif</h1>
 
         <div class="button-container">
@@ -107,17 +113,71 @@
     </div>
 
     <!-- Nouveau bouton circulaire pour le profil -->
-    <button class="circle-button" onclick="window.location.href='profil.html'">
-        <!-- Récupération de l'image de profil du localStorage -->
+    <button class="circle-button" id="profileButton" onclick="window.location.href='profil.html'">
         <img id="profilePic" src="default-avatar.png" alt="Photo de Profil">
     </button>
 
-    <script>
-        // Charger la photo de profil depuis le localStorage si elle existe
-        let profilePic = localStorage.getItem('profilePic');
-        if (profilePic) {
-            document.getElementById('profilePic').src = profilePic;
+    <script type="module">
+        // Importer les fonctions nécessaires de Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+        // Configuration de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
+            authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
+            projectId: "jeu-de-carte-dfa51",
+            storageBucket: "jeu-de-carte-dfa51.firebasestorage.app",
+            messagingSenderId: "684513159935",
+            appId: "1:684513159935:web:17820c82672d6527ff7aca",
+            measurementId: "G-F3P0WW2R3H"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Fonction de connexion avec Google
+        function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    console.log("Utilisateur connecté : ", user);
+
+                    // Sauvegarder les informations de l'utilisateur
+                    localStorage.setItem('profilePic', user.photoURL || "default-avatar.png");
+
+                    // Masquer le formulaire de connexion et afficher le profil
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('contentBox').style.display = 'block';
+
+                    // Afficher l'image de profil
+                    document.getElementById('profilePic').src = user.photoURL || "default-avatar.png";
+                })
+                .catch((error) => {
+                    console.error("Erreur de connexion : ", error.message);
+                });
         }
+
+        // Vérifier l'état de la connexion de l'utilisateur
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Utilisateur connecté
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('contentBox').style.display = 'block';
+                document.getElementById('profilePic').src = user.photoURL || "default-avatar.png";
+            } else {
+                // Utilisateur non connecté
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('contentBox').style.display = 'none';
+            }
+        });
+
+        // Attacher un gestionnaire d'événements au bouton de connexion Google
+        document.getElementById('googleSignInButton').addEventListener('click', signInWithGoogle);
     </script>
 
 </body>
