@@ -91,6 +91,28 @@
             border-radius: 50%; /* Forme circulaire pour l'image */
             object-fit: cover; /* S'assurer que l'image couvre bien l'espace du bouton */
         }
+
+        /* Styles du bouton de connexion Google */
+    #googleSignInButton {
+        padding: 15px 30px;
+        font-size: 18px;
+        margin: 20px 0;
+        border: none;
+        border-radius: 25px; /* Bords arrondis */
+        background: linear-gradient(45deg, #ff9a9e, #fad0c4); /* Dégradé élégant */
+        color: #ffffff; /* Couleur du texte blanche */
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3); /* Ombre subtile */
+        transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Effet au survol du bouton */
+    #googleSignInButton:hover {
+        background: linear-gradient(45deg, #ff758c, #feb47b); /* Couleurs plus vives au survol */
+        transform: scale(1.05); /* Agrandissement léger */
+        box-shadow: 3px 6px 15px rgba(0, 0, 0, 0.5); /* Accentuation de l'ombre */
+    }
     </style>
 </head>
 <body>
