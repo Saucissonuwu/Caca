@@ -183,46 +183,37 @@
 
 
     <script type="module">
-        // Importation des SDK nécessaires
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";  // Ajouter GoogleAuthProvider
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-    
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDU8t-5pvpGIWNPM-uxP3ZzYxQ7mAY5NVY",
-            authDomain: "jeu-de-carte-dfa51.firebaseapp.com",
-            projectId: "jeu-de-carte-dfa51",
-            storageBucket: "jeu-de-carte-dfa51.firebasestorage.app",
-            messagingSenderId: "684513159935",
-            appId: "1:684513159935:web:17820c82672d6527ff7aca",
-            measurementId: "G-F3P0WW2R3H"
-        };
-    
-        // Initialiser Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-    
-        // Fonction de connexion avec Google
-        function signInWithGoogle() {
-            console.log("Tentative de connexion avec Google...");
-    
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider).then((result) => {
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"; 
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "Votre-apiKey",
+        authDomain: "Votre-authDomain",
+        projectId: "Votre-projectId",
+        storageBucket: "Votre-storageBucket",
+        messagingSenderId: "Votre-messagingSenderId",
+        appId: "Votre-appId",
+        measurementId: "Votre-measurementId"
+    };
+
+    // Initialiser Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Fonction pour se connecter avec Google
+    function signInWithGoogle() {
+        const provider = new GoogleAuthProvider(); // Créer un provider Google
+        signInWithPopup(auth, provider)  // Utiliser signInWithPopup pour ouvrir la fenêtre pop-up de connexion
+            .then((result) => {
                 const user = result.user;
                 console.log("Utilisateur connecté : ", user);
-    
-                // Afficher le profil après connexion
-                document.getElementById('loginContainer').style.display = 'none'; // Masquer la section de connexion
-                document.getElementById('contentBox').style.display = 'block'; // Afficher le profil
-    
-                // Charger les données de l'utilisateur
-                loadProfileData();
-            }).catch((error) => {
+            })
+            .catch((error) => {
                 console.error("Erreur de connexion : ", error.message);
-                alert("Une erreur est survenue lors de la connexion. Vérifiez la console pour plus de détails.");
+                alert("Erreur de connexion, vérifiez la console.");
             });
+    }
         }
     
         // Fonction pour charger les données du profil
