@@ -83,12 +83,19 @@
             align-items: center;
             background-color: transparent;
             overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .reward.selected {
+            transform: scale(1.2); /* Agrandir la carte sélectionnée */
+            z-index: 20;
         }
 
         .reward img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            cursor: pointer;
         }
 
         .reward-rarity {
@@ -142,6 +149,23 @@
             font-size: 18px;
             font-weight: bold;
         }
+
+        .error-message {
+            color: red;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .quantity-input {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .quantity-input input {
+            width: 50px;
+            text-align: center;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -158,10 +182,12 @@
         <button class="sort-button" onclick="sortCollection()">Trier par Rareté</button>
         <button class="manage-button" onclick="toggleManageMenu()">Ajouter / Supprimer</button>
         <div class="manage-menu" id="manage-menu">
-            <button onclick="addItem()">Ajouter une Carte</button>
+            <button onclick="showAddMessage()">Ajouter une Carte</button>
             <button onclick="removeItem()">Supprimer une Carte</button>
         </div>
     </div>
+
+    <div class="error-message" id="error-message"></div>
 
     <div class="collection-container" id="collection-container">
         <!-- Les récompenses collectées apparaîtront ici -->
@@ -176,6 +202,7 @@
 
     <script>
         const MAX_CARDS = 46;
+        let selectedReward = null;
 
         function loadCollection() {
             const collectionContainer = document.getElementById('collection-container');
@@ -217,6 +244,7 @@
 
                 const rewardElement = document.createElement('div');
                 rewardElement.classList.add('reward');
+                rewardElement.onclick = () => selectReward(rewardData);
 
                 // Ajouter la rareté en haut de la carte
                 const rewardRarityElement = document.createElement('div');
@@ -228,7 +256,6 @@
                 const rewardImage = document.createElement('img');
                 rewardImage.src = rewardData.image;
                 rewardImage.alt = name;
-                rewardImage.onclick = () => showModal(rewardData.image); // Ajout de la fonction d'ouverture du modal
                 rewardElement.appendChild(rewardImage);
 
                 // Ajouter le comptage des doublons
@@ -246,35 +273,52 @@
             counter.textContent = `Cartes collectées : ${uniqueCount} / ${MAX_CARDS}`;
         }
 
-        function showModal(imageSrc) {
-            const modal = document.getElementById('modal');
-            const modalImage = document.getElementById('modal-image');
-            modalImage.src = imageSrc; // Charge l'image haute résolution dans le modal
-            modal.style.display = 'flex'; // Affiche le modal
+        function selectReward(rewardData) {
+            if (!selectedReward) {
+                selectedReward = rewardData;
+                const rewardElements = document.querySelectorAll('.reward');
+                rewardElements.forEach((element) => {
+                    if (element.querySelector('img').src === rewardData.image) {
+                        element.classList.add('selected');
+                    }
+                });
+                showQuantityInput();
+            }
         }
 
-        function closeModal() {
-            const modal = document.getElementById('modal');
-            modal.style.display = 'none'; // Cache le modal
+        function showQuantityInput() {
+            const quantityInput = document.createElement('div');
+            quantityInput.classList.add('quantity-input');
+            quantityInput.innerHTML = `
+                <input type="number" id="quantity" min="1" max="10" value="1" />
+                <button onclick="addSelectedReward()">Ajouter</button>
+            `;
+            document.getElementById('error-message').appendChild(quantityInput);
         }
 
-        function sortCollection() {
-            const rewardsCollection = JSON.parse(localStorage.getItem('rewardsCollection')) || [];
+        function addSelectedReward() {
+            const quantity = document.getElementById('quantity').value;
+            if (quantity > 0) {
+                const rewardsCollection = JSON.parse(localStorage.getItem('rewardsCollection')) || [];
+                rewardsCollection.push(...Array(parseInt(quantity)).fill(selectedReward));
+                localStorage.setItem('rewardsCollection', JSON.stringify(rewardsCollection));
+                renderCollection(rewardsCollection);
+                selectedReward = null;
+                document.querySelectorAll('.reward').forEach((element) => {
+                    element.classList.remove('selected');
+                });
+                document.querySelector('.quantity-input').remove();
+            }
+        }
 
-            // Tri par puissance décroissante
-            rewardsCollection.sort((a, b) => b.weight - a.weight);
-
-            renderCollection(rewardsCollection);
+        function showAddMessage() {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = 'Sélectionnez une carte à ajouter';
         }
 
         function toggleManageMenu() {
             const menu = document.getElementById('manage-menu');
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function addItem() {
-            // Logique pour ajouter une carte
-            alert("Ajouter une carte à la collection.");
         }
 
         function removeItem() {
