@@ -220,35 +220,52 @@
                 });
         }
 
-        // Charger les données du profil
-        function loadProfileData(uid) {
-            const userRef = doc(db, "users", uid);
-            getDoc(userRef).then((docSnap) => {
-                if (docSnap.exists()) {
-                    const userData = docSnap.data();
-                    document.getElementById('rouletteCount').textContent = userData.rouletteCount || 0;
-                    document.getElementById('invocationCount').textContent = userData.invocationCount || 0;
-                    document.getElementById('profilePic').src = userData.profilePic || "default-avatar.png";
-                }
-            }).catch((error) => {
-                console.error("Erreur de lecture des données utilisateur : ", error.message);
-            });
+       function loadProfileData(uid) {
+    const userRef = doc(db, "users", uid);
+    getDoc(userRef).then((docSnap) => {
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            document.getElementById('rouletteCount').textContent = userData.rouletteCount || 0;
+            document.getElementById('invocationCount').textContent = userData.invocationCount || 0;
+            document.getElementById('profilePic').src = userData.profilePic || "default-avatar.png";
+            startPlayTime(userData.playTime || 0); // Commencer le suivi du temps de jeu
         }
+    }).catch((error) => {
+        console.error("Erreur de lecture des données utilisateur : ", error.message);
+    });
+}
 
-        // Détecter l'état de l'utilisateur
+function startPlayTime(lastPlayTime) {
+    const startTime = Date.now() - lastPlayTime; // Calculer l'heure de début
+    updatePlayTime(startTime); // Commencer à mettre à jour le temps de jeu
+}
+
+function updatePlayTime(startTime) {
+    const playTimeDisplay = document.getElementById('playTime');
+    setInterval(() => {
+        const currentTime = Date.now();
+        const elapsed = Math.floor((currentTime - startTime) / 1000); // Temps écoulé en secondes
+        const hours = Math.floor(elapsed / 3600);
+        const minutes = Math.floor((elapsed % 3600) / 60);
+        const seconds = elapsed % 60;
+        playTimeDisplay.textContent = `Temps de jeu : ${hours}h ${minutes}m ${seconds}s`;
+        
+        // Mettre à jour Firestore en temps réel
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        updateDoc(userRef, { playTime: currentTime - startTime });
+    }, 1000); // Mettre à jour chaque seconde
+}
+
         auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('loginContainer').style.display = 'none'; // Masquer la section de connexion
-                document.getElementById('contentBox').style.display = 'block'; // Afficher le profil
-                loadProfileData(user.uid); // Charger les données de l'utilisateur
-            } else {
-                document.getElementById('loginContainer').style.display = 'block'; // Afficher la section de connexion
-                document.getElementById('contentBox').style.display = 'none'; // Masquer la section du profil
-            }
-        });
-
-        // Attacher un gestionnaire d'événements au bouton de connexion Google
-        document.getElementById('googleSignInButton').addEventListener('click', signInWithGoogle);
+    if (user) {
+        document.getElementById('loginContainer').style.display = 'none'; // Masquer la section de connexion
+        document.getElementById('contentBox').style.display = 'block'; // Afficher le profil
+        loadProfileData(user.uid); // Charger les données de l'utilisateur et démarrer le temps de jeu
+    } else {
+        document.getElementById('loginContainer').style.display = 'block'; // Afficher la section de connexion
+        document.getElementById('contentBox').style.display = 'none'; // Masquer la section du profil
+    }
+});
     </script>
 
 </body>
