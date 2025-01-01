@@ -23,7 +23,6 @@
             margin-bottom: 10px;
         }
 
-        /* Ajouter un style pour le compteur de pièces */
         .coins-counter {
             position: absolute;
             top: 10px;
@@ -38,25 +37,16 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Style pour les boutons d'augmentation et de diminution */
-        .coins-control {
-            margin-top: 10px;
-        }
-
-        .coins-button {
-            font-size: 24px;
-            padding: 5px 15px;
-            margin: 0 10px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .coins-button:hover {
-            background-color: #2980b9;
+        .roulette-container-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border: 3px solid #333;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #e0e0e0, #ffffff);
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3), -8px -8px 16px rgba(255, 255, 255, 0.5);
         }
 
         .roulette-container {
@@ -91,10 +81,6 @@
             align-items: center;
         }
 
-        .info-button:hover {
-            background-color: #2980b9;
-        }
-
         .info-popup {
             position: absolute;
             top: 40px;
@@ -108,10 +94,6 @@
             text-align: left;
             display: none;
             z-index: 10;
-        }
-
-        .info-popup ul {
-            padding-left: 20px;
         }
 
         .segment-row {
@@ -131,17 +113,6 @@
             font-weight: bold;
             background-color: #f0f0f0;
             position: relative;
-        }
-
-        .segment .light {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 0, 0.4);
-            display: none;
-            z-index: 1;
         }
 
         .center-slot {
@@ -174,12 +145,6 @@
             background-color: #2980b9;
         }
 
-        .timer {
-            font-size: 18px;
-            color: red;
-            margin-top: 15px;
-        }
-
         .back-button {
             position: absolute;
             top: 10px;
@@ -198,44 +163,63 @@
         .back-button:hover {
             background-color: #2980b9;
         }
+
+        #increment-selector {
+    margin-left: 10px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
     </style>
 </head>
 <body>
-    <!-- Affichage du compteur de pièces -->
     <div class="coins-counter" id="coins-counter">Pièces: 0</div>
 
     <h1>Roulette des Pièces</h1>
     <a href="index.html" class="back-button">Retour</a>
-    <div class="roulette-container" id="roulette">
-        <button class="info-button" onclick="toggleInfo()">i</button>
-        <div class="info-popup" id="info-popup">
-            <strong>Probabilités :</strong>
-            <ul>
-                <li>50 Pièces : 70%</li>
-                <li>100 Pièces : 35%</li>
-                <li>200 Pièces : 10%</li>
-                <li>300 Pièces : 6%</li>
-                <li>500 Pièces : 3.4%</li>
-                <li>1000 Pièces : 0.8%</li>
-            </ul>
-        </div>
-        <div class="segment-row">
-            <div class="segment" data-prize="50">50 Pièces<div class="light"></div></div>
-            <div class="segment" data-prize="100">100 Pièces<div class="light"></div></div>
-            <div class="segment" data-prize="200">200 Pièces<div class="light"></div></div>
-        </div>
-        <div class="center-slot" id="center-slot">?</div>
-        <div class="segment-row">
-            <div class="segment" data-prize="300">300 Pièces<div class="light"></div></div>
-            <div class="segment" data-prize="500">500 Pièces<div class="light"></div></div>
-            <div class="segment" data-prize="1000">1000 Pièces<div class="light"></div></div>
+    <div class="roulette-container-wrapper">
+        <div class="roulette-container" id="roulette">
+            <button class="info-button" onclick="toggleInfo()">i</button>
+            <div class="info-popup" id="info-popup">
+                <strong>Probabilités :</strong>
+                <ul>
+                    <li>50 Pièces : 70%</li>
+                    <li>100 Pièces : 35%</li>
+                    <li>200 Pièces : 10%</li>
+                    <li>300 Pièces : 6%</li>
+                    <li>500 Pièces : 3.4%</li>
+                    <li>1000 Pièces : 0.8%</li>
+                </ul>
+            </div>
+            <div class="segment-row">
+                <div class="segment" data-prize="50">50 Pièces</div>
+                <div class="segment" data-prize="100">100 Pièces</div>
+                <div class="segment" data-prize="200">200 Pièces</div>
+            </div>
+            <div class="center-slot" id="center-slot">?</div>
+            <div class="segment-row">
+                <div class="segment" data-prize="300">300 Pièces</div>
+                <div class="segment" data-prize="500">500 Pièces</div>
+                <div class="segment" data-prize="1000">1000 Pièces</div>
+            </div>
         </div>
     </div>
 
     <div class="coins-control">
-        <!-- Boutons pour augmenter/diminuer les pièces -->
-        <button class="coins-button" onclick="adjustCoins(-10)">-</button>
-        <button class="coins-button" onclick="adjustCoins(10)">+</button>
+        <!-- Boutons pour ajuster les pièces -->
+        <button class="coins-button" onclick="adjustCoins(-incrementValue)">-</button>
+        <button class="coins-button" onclick="adjustCoins(incrementValue)">+</button>
+        <select id="increment-selector" onchange="updateIncrementValue()">
+            <option value="1">1</option>
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
     </div>
 
     <button id="spin-button" onclick="spinRoulette()">Lancer la Roulette</button>
@@ -246,19 +230,26 @@
         let spinning = false;
         let totalCoins = 0; // Variable pour stocker le nombre total de pièces
         let rouletteCount = parseInt(localStorage.getItem('rouletteCount')) || 0;
+        let incrementValue = 10; // Valeur par défaut de l'incrément
+
 
         // Fonction pour mettre à jour l'affichage du compteur de pièces
-        function updateCoinCounter() {
-            document.getElementById('coins-counter').textContent = `Pièces: ${totalCoins}`;
-            localStorage.setItem('totalCoins', totalCoins); // Sauvegarde dans le stockage local
-        }
+function updateCoinCounter() {
+    document.getElementById('coins-counter').textContent = `Pièces: ${totalCoins}`;
+    localStorage.setItem('totalCoins', totalCoins); // Sauvegarde dans le stockage local
+}
 
-        // Fonction pour ajuster les pièces
-        function adjustCoins(amount) {
-            totalCoins += amount;
-            if (totalCoins < 0) totalCoins = 0;  // Empêcher les pièces de devenir négatives
-            updateCoinCounter();
-        }
+        // Fonction pour ajuster les pièces (maintenant les pièces peuvent être négatives)
+function adjustCoins(amount) {
+    totalCoins += amount;
+    updateCoinCounter();
+}
+
+       // Mettre à jour la valeur de l'incrément selon la sélection
+function updateIncrementValue() {
+    const selector = document.getElementById('increment-selector');
+    incrementValue = parseInt(selector.value, 10);
+}
 
         function checkSpinAvailability() {
             const lastSpinTime = localStorage.getItem('lastSpinTime');
