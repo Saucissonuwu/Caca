@@ -258,8 +258,8 @@
         </div>
 
         <div class="button-container">
-            <button onclick="singleSummon()">50 pieces x1</button>
-            <button onclick="multiSummon()">500 pieces x10</button>
+            <button onclick="singleSummon()">50 Koumi x1</button>
+            <button onclick="multiSummon()">500 Koumi x10</button>
         </div>
 
         <div id="rewards" class="rewards-container">
@@ -406,7 +406,7 @@ function saveRewardToCollection(reward) {
         function singleSummon() {
     const cost = 50; // Coût de 1 pièce
     if (!canSummon(cost)) {
-        alert("Vous n'avez pas assez de pièces pour une invocation !");
+        alert("Vous n'avez pas assez de Koumi pour une invocation !");
         return;
     }
 
@@ -442,7 +442,7 @@ function saveRewardToCollection(reward) {
 function multiSummon() {
     const cost = 500; // Coût pour invocation x10
     if (!canSummon(cost)) {
-        alert("Vous n'avez pas assez de pièces pour une invocation x10 !");
+        alert("Vous n'avez pas assez de Koumi pour une invocation x10 !");
         return;
     }
 
